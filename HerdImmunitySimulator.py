@@ -57,7 +57,7 @@ parser.add_argument('-n','--natImmunity', type=restricted_immunity, dest='natImm
 parser.add_argument('-v','--vacImmunity', type=restricted_immunity, dest='vacImmunity', default=[0.9], nargs=1,
                     help='immunity conferred by vaccination (chance to resist infection)')
 parser.add_argument('-V','--vaccRate', type=restricted_vaccination, dest='vaccinated', default=[0.9], nargs=1,
-                    help='percentage of the population that has been vaccinated')
+                    help='individual probability that any given node will be vaccinated')
 parser.add_argument('--debug', dest='debug_flag', default=False, action='store_true',
                     help='print additional debug output')
 args = parser.parse_args()
