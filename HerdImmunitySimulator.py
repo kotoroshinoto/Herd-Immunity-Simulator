@@ -77,77 +77,94 @@ if args.debug_flag:
     print("vaccinated value: %f\n\n" % vaccinated)
 # End user-set values
 
-pop = []  # list to contain population of individuals' vaccination status
-infected = []  # list of individuals' infection status
-
 import random,sys
 
-sys.setrecursionlimit(population*Rnull)  # We're going to be doing a LOT of recursion!
+sys.setrecursionlimit(population*Rnull+25)  # We're going to be doing a LOT of recursion!
 
-def initPop():
-    for i in range(population):
+class InfectableNode:
+    def __init__(self):
+        self.vaccinated = False
+        self.infected = False
+    def attempt_infection(self):
         r = random.random()
-        pop.append(r <= vaccinated)
-        infected.append(False)
-
-def evalPop():
-    unVac = 0
-    vac = 0
-    iVac = 0
-    iUnVac = 0
-    hVac = 0
-    hUnVac = 0
-    herd = 1 - (1 / Rnull)
-
-    for i in range(population):
-        if pop[i]:
-            vac += 1
-            if infected[i]:
-                iVac += 1
-            else:
-                hVac += 1
+        if self.vaccinated:
+            self.infected = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
         else:
-            unVac += 1
-            if infected[i]:
-                iUnVac += 1
+            self.infected = (r > natImmunity)  # infection attempt using natural immunity
+
+class InfectablePopulation:
+    def __init__(self):
+        self.nodes = []
+        self.unresolved_infections = []
+        for i in range(population):
+            r = random.random()
+            new_node = InfectableNode()
+            new_node.vaccinated = (r <= vaccinated)
+            self.nodes.append(new_node)
+
+    def eval(self):
+        unVac = 0
+        vac = 0
+        iVac = 0
+        iUnVac = 0
+        hVac = 0
+        hUnVac = 0
+        herd = 1 - (1 / Rnull)
+
+        for i in range(0, population):
+            current_node = pop.nodes[i]
+            if current_node.vaccinated:
+                vac += 1
+                if current_node.infected:
+                    iVac += 1
+                else:
+                    hVac += 1
             else:
-                hUnVac += 1
-    immune = (vac*vacImmunity + unVac*natImmunity)/population
-    isHerd = immune >= herd
-    print("Vaccinated: " + str(vac) + " (" + str(round(vac*100/population, 1)) + "%)")
-    print("Unvaccinated: " + str(unVac) + " (" + str(round(unVac*100/population, 1)) + "%)")
-    print("Healthy vaccinated: " + str(hVac) + " (" + str(round(hVac*100/vac, 1)) + "% of vaccinated)")
-    print("Healthy unvaccinated: " + str(hUnVac) + " (" + str(round(hUnVac*100/unVac, 1)) + "% of unvaccinated)")
-    print("Infected vaccinated: " + str(iVac) + " (" + str(round(iVac*100/vac, 1)) + "% of vaccinated)")
-    print("Infected unvaccinated: " + str(iUnVac) + " (" + str(round(iUnVac*100/unVac, 1)) + "% of unvaccinated)")
-    print("Herd Immunity: " + str(isHerd) + " (" + str(round(herd*100, 1)) + "% needed for Herd Immunity; we have "+str(round(immune*100,1))+"%)")
+                unVac += 1
+                if current_node.infected:
+                    iUnVac += 1
+                else:
+                    hUnVac += 1
+        immune = (vac*vacImmunity + unVac*natImmunity)/population
+        isHerd = immune >= herd
+        print("Vaccinated: " + str(vac) + " (" + str(round(vac*100/population, 1)) + "%)")
+        print("Unvaccinated: " + str(unVac) + " (" + str(round(unVac*100/population, 1)) + "%)")
+        print("Healthy vaccinated: " + str(hVac) + " (" + str(round(hVac*100/vac, 1)) + "% of vaccinated)")
+        print("Healthy unvaccinated: " + str(hUnVac) + " (" + str(round(hUnVac*100/unVac, 1)) + "% of unvaccinated)")
+        print("Infected vaccinated: " + str(iVac) + " (" + str(round(iVac*100/vac, 1)) + "% of vaccinated)")
+        print("Infected unvaccinated: " + str(iUnVac) + " (" + str(round(iUnVac*100/unVac, 1)) + "% of unvaccinated)")
+        print("Herd Immunity: " + str(isHerd) + " (" + str(round(herd*100, 1)) + "% needed for Herd Immunity; we have "+str(round(immune*100,1))+"%)")
 
-def infectNode(node):  # attempt to infect this individual
-    if not(infected[node]):  # We don't do anything if it's already infected
-        r = random.random()
-        if pop[node]:
-            infect = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
-        else:
-            infect = (r > natImmunity)  # infection attempt using natural immunity
-        if infect:
-            infected[node] = True
-            infectSpread(node)  # recursively spread infection if infection was caught
+    def infect(self):
+        # infect the first person
+        self.initial_infection()
+        #handle infection stack
+        while len(self.unresolved_infections) > 0:
+            node = self.unresolved_infections.pop(0)
+            self.infect_spread(node)
 
-def infectSpread(node):  # spread infection from infected individual recursively
-    while True:  # Let's make sure our given node isn't in that list
-        rNodes = random.sample(range(0, population), Rnull)  # generate a random sample of node numbers
-        if not(node in rNodes):  # if infecting node is not in random sample, break out of loop
-            break
-    for n in rNodes:  # attempt to spread infection to nodes in random sample
-        infectNode(n)
+    def initial_infection(self):
+        node = int(random.random()*population)
+        #first infection
+        self.nodes[node].infected = True  # The first one is always infected no matter what
+        self.infect_spread(node)  # begin recursive spread of infection
 
-def initInfect():  # infect the first person
-    node = int(random.random()*population)
-    infected[node] = True  # The first one is always infected no matter what
-    infectSpread(node)  # begin recursive spread of infection
+    def infect_spread(self, node):  # spread infection from infected individual recursively
+        while True:  # Let's make sure our given node isn't in that list
+            rNodes = random.sample(range(0, population), Rnull)  # generate a random sample of node numbers
+            if not(node in rNodes):  # if infecting node is not in random sample, break out of loop
+                break
+        for n in rNodes:  # attempt to spread infection to nodes in random sample
+            if not self.nodes[n].infected:
+                self.nodes[n].attempt_infection()
+                if self.nodes[n].infected:
+                    self.unresolved_infections.append(n)  # recursively spread infection if infection was caught
 
-initPop()
 
-initInfect()
 
-evalPop()
+pop = InfectablePopulation()  # infectable node population, automatically initialized
+
+pop.infect()
+
+pop.eval()
+
