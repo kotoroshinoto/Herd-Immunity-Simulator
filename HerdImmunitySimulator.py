@@ -81,16 +81,32 @@ import random,sys
 
 sys.setrecursionlimit(population*Rnull+25)  # We're going to be doing a LOT of recursion!
 
+
 class InfectableNode:
     def __init__(self):
-        self.vaccinated = False
-        self.infected = False
+        self.__vaccinated = False
+        self.__infected = False
+
     def attempt_infection(self):
         r = random.random()
-        if self.vaccinated:
-            self.infected = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
+        if self.__vaccinated:
+            self.__infected = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
         else:
-            self.infected = (r > natImmunity)  # infection attempt using natural immunity
+            self.__infected = (r > natImmunity)  # infection attempt using natural immunity
+
+    def is_infected(self):
+        return self.__infected
+
+    def infect(self):
+        self.__infected = True;
+
+    def vaccinate(self):
+        self.__vaccinated = True
+
+    def is_vaccinated(self):
+        return self.__vaccinated
+
+
 
 class InfectablePopulation:
     def __init__(self):
@@ -99,7 +115,8 @@ class InfectablePopulation:
         for i in range(population):
             r = random.random()
             new_node = InfectableNode()
-            new_node.vaccinated = (r <= vaccinated)
+            if r <= vaccinated:
+                new_node.vaccinate()
             self.nodes.append(new_node)
 
     def eval(self):
@@ -113,15 +130,15 @@ class InfectablePopulation:
 
         for i in range(0, population):
             current_node = pop.nodes[i]
-            if current_node.vaccinated:
+            if current_node.is_vaccinated():
                 vac += 1
-                if current_node.infected:
+                if current_node.is_infected():
                     iVac += 1
                 else:
                     hVac += 1
             else:
                 unVac += 1
-                if current_node.infected:
+                if current_node.is_infected():
                     iUnVac += 1
                 else:
                     hUnVac += 1
@@ -137,27 +154,27 @@ class InfectablePopulation:
 
     def infect(self):
         # infect the first person
-        self.initial_infection()
+        self.__initial_infection()
         #handle infection queue
         while len(self.unresolved_infections) > 0:
-            node = self.unresolved_infections.pop(0)
-            self.infect_spread(node)
+            node = self.unresolved_infections.pop()
+            self.__infect_spread(node)
 
-    def initial_infection(self):
+    def __initial_infection(self):
         node = int(random.random()*population)
         #first infection
-        self.nodes[node].infected = True  # The first one is always infected no matter what
-        self.infect_spread(node)  # begin recursive spread of infection
+        self.nodes[node].infect()  # The first one is always infected no matter what
+        self.__infect_spread(node)  # begin recursive spread of infection
 
-    def infect_spread(self, node):  # spread infection from infected individual recursively
+    def __infect_spread(self, node):  # spread infection from infected individual recursively
         while True:  # Let's make sure our given node isn't in that list
             rNodes = random.sample(range(0, population), Rnull)  # generate a random sample of node numbers
             if not(node in rNodes):  # if infecting node is not in random sample, break out of loop
                 break
         for n in rNodes:  # attempt to spread infection to nodes in random sample
-            if not self.nodes[n].infected:
+            if not self.nodes[n].is_infected():
                 self.nodes[n].attempt_infection()
-                if self.nodes[n].infected:
+                if self.nodes[n].is_infected():
                     self.unresolved_infections.append(n)  # recursively spread infection if infection was caught
 
 
