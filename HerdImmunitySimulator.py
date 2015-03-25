@@ -155,7 +155,7 @@ class InfectablePopulation:
     def infect(self):
         # infect the first person
         self.__initial_infection()
-        #handle infection queue
+        #handle infection stack
         while len(self.unresolved_infections) > 0:
             node = self.unresolved_infections.pop()
             self.__infect_spread(node)
