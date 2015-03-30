@@ -88,11 +88,12 @@ class InfectableNode:
         self.__infected = False
 
     def attempt_infection(self):
-        r = random.random()
-        if self.__vaccinated:
-            self.__infected = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
-        else:
-            self.__infected = (r > natImmunity)  # infection attempt using natural immunity
+	if not (self.__infected) :
+            r = random.random()
+            if self.__vaccinated:
+                self.__infected = (r > vacImmunity)  # infection attempt using immunity due to vaccine protection
+            else:
+                self.__infected = (r > natImmunity)  # infection attempt using natural immunity
 
     def is_infected(self):
         return self.__infected
