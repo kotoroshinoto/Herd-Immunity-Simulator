@@ -1,0 +1,5 @@
+project(RandomTest CXX)
+cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
+add_executable(RandomTest main.cpp)
+set_property(TARGET RandomTest PROPERTY CXX_STANDARD 11)
+set_property(TARGET RandomTest PROPERTY CXX_STANDARD_REQUIRED ON)
