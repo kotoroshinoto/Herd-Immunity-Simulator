@@ -14,6 +14,7 @@
 
 class InfectablePopulation {
 private:
+    std::unique_ptr<InfectableNode> pop;
     void initial_infection();
     void spread_infection();
 public:
