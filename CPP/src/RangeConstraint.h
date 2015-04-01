@@ -8,7 +8,7 @@
 #include <string>
 #include <tclap/Constraint.h>
 #include <iostream>
-#include <typeinfo>
+
 #include <sstream>
 #include <limits>
 template<class T>
@@ -22,6 +22,7 @@ private:
     enum RangeBounds boundary_state;
     std::string _shortID;
     std::string _desc;
+
 public:
     RangeConstraint(T val, bool h_or_l){
         //one side unbounded
