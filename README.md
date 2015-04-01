@@ -2,9 +2,11 @@
 A Python simulation of Herd Immunity from vaccination (in Python subdirectory)
 for the interpreter: https://www.python.org/downloads/
 
-C++ port is in CPP subdirectory. 
-to build from source requires
+C++ port is in CPP subdirectory.
+to build from source requires the following
+
 cmake version 3.1+ (http://www.cmake.org/)
+
 tclap (http://tclap.sourceforge.net/)
 
 if you are on linux, both of these will be in your distribution repository.
