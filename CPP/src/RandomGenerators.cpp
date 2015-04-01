@@ -15,12 +15,13 @@ HerdImmunityRandomGenerators::HerdImmunityRandomGenerators(double _VaccImmune, d
         gen_infection_randomizer_vaccinated(rd()),
         gen_vaccination_randomizer(rd()),
         gen_node_randomizer(rd()),
-        infection_randomizer_unvaccinated(_NatImmune),
-        infection_randomizer_vaccinated(_VaccImmune),
+        infection_randomizer_unvaccinated(1-_NatImmune),
+        infection_randomizer_vaccinated(1-_VaccImmune),
         vaccination_randomizer(_VaccRate),
         node_randomizer(0,(_population - 1)){
 
 }
+
 HerdImmunityRandomGenerators::~HerdImmunityRandomGenerators(){
 
 }
