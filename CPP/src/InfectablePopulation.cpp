@@ -4,12 +4,15 @@
 
 #include "InfectablePopulation.h"
 #include <sstream>
-InfectablePopulation::InfectablePopulation(){
+InfectablePopulation::InfectablePopulation() : pop(nullptr),infection_stack(){
 
 }
 
 InfectablePopulation::~InfectablePopulation(){
-
+    if(this->pop != nullptr){
+        delete[] this->pop;
+        this->pop= nullptr;
+    }
 }
 
 void InfectablePopulation::eval(){
@@ -19,8 +22,8 @@ void InfectablePopulation::eval(){
     size_t iUnVac = 0;
     size_t hVac = 0;
     size_t hUnVac = 0;
-    double herd = 1.0 - (1.0 / ((double)Rnull));
-    for(int i =0 ; i < this->population; i++){
+    double herd = 1.0 - (1.0 / ((double)herd_rand->getRnull()));
+    for(int i =0 ; i < herd_rand->getPopulation(); i++){
         if(this->pop[i].is_vaccinated()){
             vac++;
             if(this->pop[i].is_infected()){
@@ -38,7 +41,7 @@ void InfectablePopulation::eval(){
         }
     }
 
-    double immune = (((double)vac) * herd_rand->getVaccineImmunity() + ((double)unVac) * herd_rand->getNaturalImmunity()) / ((double)population);
+    double immune = (((double)vac) * herd_rand->getVaccineImmunity() + ((double)unVac) * herd_rand->getNaturalImmunity()) / ((double)herd_rand->getPopulation());
     bool isHerd = immune >= herd;
 
     //divbyzero error fixes
@@ -56,12 +59,13 @@ void InfectablePopulation::eval(){
         hUnVacP=std::round((((double)hUnVac)*100.0)/((double)unVac)*10.0)/10.0;
         iUnVacP=std::round((((double)iUnVac)*100.0)/((double)unVac)*10.0)/10.0;
     }
-    std::cout<<"Vaccinated: "<<vac<<" ("<< std::round(((double)vac) * 100.0 / ((double)population)*10.0)/10.0<<"%)<<std::endl";
-    std::cout<<"Unvaccinated: "<<unVac<<" ("<< std::round(((double)unVac) * 100.0 / ((double)population)*10.0)/10.0<<"%)<<std::endl";
-    std::cout<<"Healthy Vaccinated: "<<hVac<<" ("<<hVacP<<"% of vaccinated"<<std::endl;
-    std::cout<<"Healthy Unvaccinated: "<<hUnVac<<" ("<<hUnVacP<<"% of unvaccinated"<<std::endl;
-    std::cout<<"Infected Vaccinated: "<<iVac<<" ("<<iVacP<<"% of vaccinated"<<std::endl;
-    std::cout<<"Infected Unvaccinated: "<<iUnVac<<" ("<<iUnVacP<<"% of unvaccinated"<<std::endl;
+    std::cout<<std::boolalpha;
+    std::cout<<"Vaccinated: "<<vac<<" ("<< std::round(((double)vac) * 100.0 / ((double)herd_rand->getPopulation())*10.0)/10.0<<"%)"<<std::endl;
+    std::cout<<"Unvaccinated: "<<unVac<<" ("<< std::round(((double)unVac) * 100.0 / ((double)herd_rand->getPopulation())*10.0)/10.0<<"%)"<<std::endl;
+    std::cout<<"Healthy Vaccinated: "<<hVac<<" ("<<hVacP<<"% of vaccinated)"<<std::endl;
+    std::cout<<"Healthy Unvaccinated: "<<hUnVac<<" ("<<hUnVacP<<"% of unvaccinated)"<<std::endl;
+    std::cout<<"Infected Vaccinated: "<<iVac<<" ("<<iVacP<<"% of vaccinated)"<<std::endl;
+    std::cout<<"Infected Unvaccinated: "<<iUnVac<<" ("<<iUnVacP<<"% of unvaccinated)"<<std::endl;
     std::cout<<"Herd Immunity: "<<isHerd<<" ("<<round(herd*100.0*10.0)/10.0<<"% needed for Herd Immunity; we have "<<round(immune*100.0*10.0)/10.0<<"%)"<<std::endl;
 }
 
@@ -79,14 +83,10 @@ void InfectablePopulation::runSimulation(){
 }
 
 void InfectablePopulation::initial_infection(){
-    std::cout<<"TESTDERP1"<<std::endl;
+
     std::size_t patient_zero=herd_rand->getRandomNode();
-    std::cout<<"TESTDERP2"<<std::endl;
     this->pop[patient_zero].infect();
-    std::cout<<"TESTDERP3"<<std::endl;
     this->infection_stack.push(patient_zero);
-    std::cout<<"TESTDERP4"<<std::endl;
-//    std::cout<<"First infected node: "<<patient_zero<<std::endl;
 }
 
 void InfectablePopulation::spread_infection(size_t entry){
@@ -105,22 +105,19 @@ void InfectablePopulation::spread_infection(size_t entry){
 }
 
 void InfectablePopulation::init_population(){
-    this->pop.reset(new InfectableNode[this->population]);
+    if(this->pop != nullptr){
+        delete[] this->pop;
+        this->pop= nullptr;
+    }
+    this->pop = new InfectableNode[herd_rand->getPopulation()];
 }
-
-void InfectablePopulation::setPopulation(std::size_t _population){
-    this->population=_population;
-}
-
-void InfectablePopulation::setRnull(unsigned int _Rnull){this->Rnull=_Rnull;}
 
 std::vector<std::size_t> InfectablePopulation::getRandomSample(size_t current_node){
     std::vector<std::size_t > sample;
     std::size_t tmp;
-    while(sample.size() < this->Rnull){
+    while(sample.size() < herd_rand->getRnull()){
         tmp=herd_rand->getRandomNode();
         if(tmp == current_node) {
-            //std::cout << "discarding random node: " << tmp << " it is the current node" << std::endl;
             continue;
         }
         if(std::find(sample.begin(),sample.end(),tmp) == sample.end()){
@@ -133,7 +130,6 @@ std::vector<std::size_t> InfectablePopulation::getRandomSample(size_t current_no
                     ss<<", ";
                 }
             }
-            //std::cout<<"discarding random node: "<<tmp<<" it is already in the random sample["<<sample.size()<<"]: "<< ss.str() <<std::endl;
         }
     }
     return sample;

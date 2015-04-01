@@ -11,9 +11,7 @@ InfectableNode::~InfectableNode(){
 }
 
 void InfectableNode::infect(){
-    std::cout<<"INFECT CALLED"<<std::endl;
     this->infected = true;
-    std::cout<<"INFECT RETURNING"<<std::endl;
 }
 
 void InfectableNode::vaccinate(){

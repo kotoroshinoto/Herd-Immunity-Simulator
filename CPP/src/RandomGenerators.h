@@ -25,9 +25,10 @@ private:
     double NatImmune;
     double VaccRate;
     std::size_t population;
+    std::size_t Rnull;
 
 public:
-    HerdImmunityRandomGenerators(double _VaccImmune, double _NatImmune, double _VaccRate, size_t _population);
+    HerdImmunityRandomGenerators(double _VaccImmune, double _NatImmune, double _VaccRate, std::size_t _population, std::size_t _Rnull);
     virtual ~HerdImmunityRandomGenerators();
 
      bool getRandomInfectResultVaccinated();
@@ -38,6 +39,7 @@ public:
     double getNaturalImmunity();
     double getVaccinationRate();
     std::size_t getPopulation();
+    std::size_t getRnull();
 };
 
 extern HerdImmunityRandomGenerators * herd_rand;

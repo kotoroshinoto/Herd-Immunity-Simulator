@@ -15,10 +15,8 @@
 #include <iomanip>
 class InfectablePopulation {
 private:
-    std::unique_ptr<InfectableNode[]> pop;
+    InfectableNode * pop;
     std::stack <int> infection_stack;
-    unsigned int Rnull;
-    std::size_t population;
     void initial_infection();
     void spread_infection(size_t entry);
     void init_population();
@@ -28,8 +26,6 @@ public:
     virtual ~InfectablePopulation();
     void eval();
     void runSimulation();
-    void setPopulation(std::size_t _population);
-    void setRnull(unsigned int _Rnull);
 };
 
 #endif //RANDOMTEST_INFECTABLEPOPULATION_H
