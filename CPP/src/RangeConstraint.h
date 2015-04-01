@@ -8,6 +8,9 @@
 #include <string>
 #include <tclap/Constraint.h>
 #include <iostream>
+#include <typeinfo>
+#include <sstream>
+#include <limits>
 template<class T>
 class RangeConstraint : public TCLAP::Constraint<T> {
 private:
@@ -22,36 +25,66 @@ private:
 public:
     RangeConstraint(T val, bool h_or_l){
         //one side unbounded
+        std::stringstream ss_short;
+        std::stringstream ss_long;
+        std::numeric_limits<T> limits;
         if(h_or_l){
             //true means high end being defined
             high=val;
             boundary_state=UNBOUND_LOW;
             high_inclusive=true;
+            ss_short<<'['<<limits.min()<<" - "<<high<<']';
+            ss_long<<"value in range: "<<'['<<limits.min()<<" - "<<high<<']';
+            _desc =ss_long.str();
+            _shortID=ss_short.str();
         } else {
             //false means low end being defined
             low=val;
             boundary_state=UNBOUND_HIGH;
             low_inclusive=true;
+            ss_short<<'['<<low<<" - "<<limits.max()<<']';
+            ss_long<<"value in range: "<<'['<<low<<" - "<<limits.max()<<']';
+            _desc =ss_long.str();
+            _shortID=ss_short.str();
         }
     }
     RangeConstraint(T val, bool h_or_l, bool val_i){
+        std::stringstream ss_short;
+        std::stringstream ss_long;
+        std::numeric_limits<T> limits;
         //one side unbounded
         if(h_or_l){
             //true means high end being defined
             high=val;
             boundary_state=UNBOUND_LOW;
             high_inclusive=val_i;
+            ss_short<<'['<<limits.min()<<" - "<<high<<high_inclusive ? ']' : ')';
+            ss_long<<"value in range: "<< '['<<limits.min()<<" - "<<high<<high_inclusive ? ']' : ')';
+            _desc =ss_long.str();
+            _shortID=ss_short.str();
         } else {
             //false means low end being defined
             low=val;
             boundary_state=UNBOUND_HIGH;
             low_inclusive=val_i;
+            ss_short<<low_inclusive ? '[' : '('<<low<<" - "<<limits.max()<<']';
+            ss_long<<"value in range: "<<low_inclusive ? '[' : '('<<low<<" - "<<limits.max()<<']';
+            _desc =ss_long.str();
+            _shortID=ss_short.str();
         }
     }
     RangeConstraint(T l, T h) : low(l), high(h), low_inclusive(true),high_inclusive(true),boundary_state(FINITE){
         if(l > h){
             throw std::invalid_argument("low must be smaller in value than high");
         }
+
+        std::stringstream ss_short;
+        std::stringstream ss_long;
+
+        ss_short<<'['<<low<<" - "<<high<<']';
+        ss_long<<"value in range: "<<'['<<low<<" - "<<high<<']';
+        _desc =ss_long.str();
+        _shortID=ss_short.str();
     }
     RangeConstraint(T l, T h, bool l_i, bool h_i): low(l), high(h), low_inclusive(l_i),high_inclusive(h_i),boundary_state(FINITE){
         if(l > h){
@@ -60,8 +93,18 @@ public:
         if(l == h && !(low_inclusive && high_inclusive)){
             throw std::invalid_argument("range low==high requires both low and high to be inclusive");
         }
+
+        std::stringstream ss_short;
+        std::stringstream ss_long;
+
+        ss_short<<low_inclusive ? '[' : '('<<low<<" - "<<high<<high_inclusive ? ']' : ')';
+        ss_long<<"value in range: "<<low_inclusive ? '[' : '('<<low<<" - "<<high<<high_inclusive ? ']' : ')';
+        _desc =ss_long.str();
+        _shortID=ss_short.str();
+
     }
     ~RangeConstraint(){}
+
     virtual std::string description() const{
         return _desc;
     }
