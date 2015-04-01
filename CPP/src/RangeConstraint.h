@@ -72,7 +72,7 @@ public:
         switch(boundary_state){
             //infinite range with one bounded side
             case UNBOUND_HIGH:
-                std::cout<<"UNBOUND_HIGH check"<<std::endl;
+//                std::cout<<"UNBOUND_HIGH check"<<std::endl;
                 //low end has boundary
                 if(value < low){
                     return false;
@@ -82,7 +82,7 @@ public:
                 }
                 return true;
             case UNBOUND_LOW:
-                std::cout<<"UNBOUND_LOW check"<<std::endl;
+//                std::cout<<"UNBOUND_LOW check"<<std::endl;
                 //high end has boundary
                 if(value > high){
                     return false;
@@ -92,7 +92,7 @@ public:
                 }
                 return true;
             case FINITE:
-                std::cout<<"FINITE check"<<std::endl;
+//                std::cout<<"FINITE check"<<std::endl;
                 //finite range
                 if (low == high) {
                     return value == low;

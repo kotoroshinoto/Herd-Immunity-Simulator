@@ -115,19 +115,27 @@ void InfectablePopulation::init_population(){
 std::vector<std::size_t> InfectablePopulation::getRandomSample(size_t current_node){
     std::vector<std::size_t > sample;
     std::size_t tmp;
-    while(sample.size() < herd_rand->getRnull()){
-        tmp=herd_rand->getRandomNode();
-        if(tmp == current_node) {
-            continue;
+    if(herd_rand->getPopulation() < herd_rand->getRnull()+1){
+        for(std::size_t i = 0; i < herd_rand->getPopulation(); i++){
+            if(i != current_node){
+                sample.push_back(i);
+            }
         }
-        if(std::find(sample.begin(),sample.end(),tmp) == sample.end()){
-            sample.push_back(tmp);
-        } else {
-            std::stringstream ss;
-            for(int i=0;i<sample.size();i++){
-                ss<<sample[i];
-                if(i != sample.size() -1){
-                    ss<<", ";
+    } else {
+        while (sample.size() < herd_rand->getRnull()) {
+            tmp = herd_rand->getRandomNode();
+            if (tmp == current_node) {
+                continue;
+            }
+            if (std::find(sample.begin(), sample.end(), tmp) == sample.end()) {
+                sample.push_back(tmp);
+            } else {
+                std::stringstream ss;
+                for (int i = 0; i < sample.size(); i++) {
+                    ss << sample[i];
+                    if (i != sample.size() - 1) {
+                        ss << ", ";
+                    }
                 }
             }
         }

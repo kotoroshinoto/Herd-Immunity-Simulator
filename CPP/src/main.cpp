@@ -22,6 +22,12 @@ void parseArgs(int argc, const char ** argv){
     TCLAP::ValueArg<double> vaccimmune_arg("v","vacImmunity","immunity conferred by vaccination (chance to resist infection)",false,0.9,&probabilityConstraint,cmd);
     TCLAP::ValueArg<double> natimmune_arg("n","natImmunity","(chance of an exposed unvaccinated person of resisting infection)",false,0.1,&probabilityConstraint,cmd);
     cmd.parse(argc,argv);
+
+
+//    if(rnull_arg.getValue() +1 > pop_arg.getValue()){
+//        std::cerr<<"population needs to be at least size rnull + 1 (initial infection and first round of exposures)"<<std::endl;
+//        exit(-1);
+//    }
     herd_rand = new HerdImmunityRandomGenerators(vaccimmune_arg.getValue(),natimmune_arg.getValue(),vaccrate_arg.getValue(),pop_arg.getValue(),rnull_arg.getValue());
 }
 
