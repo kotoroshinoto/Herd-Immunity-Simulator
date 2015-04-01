@@ -9,7 +9,7 @@ cmake version 3.1+ (http://www.cmake.org/)
 
 tclap (http://tclap.sourceforge.net/)
 
-if you are on linux, both of these will be in your distribution repository.
+if you are on linux, both of these should be in your distribution repository, although cmake 3.1 is fairly new, you may need to enable testing or raw repositories to get it.
 
 on mac you might need to use xcode + macports, homebrew, or something similar to pull these down and build them.
 on windows I would recommend using mingw or cygwin
