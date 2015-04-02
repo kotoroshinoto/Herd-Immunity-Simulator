@@ -5,9 +5,9 @@ for the interpreter: https://www.python.org/downloads/
 C++ port is in CPP subdirectory.
 to build from source requires the following
 
-cmake version 3.1+ (http://www.cmake.org/)
+cmake version 3.1+ (http://www.cmake.org/) -- a makefile generator
 
-tclap (http://tclap.sourceforge.net/)
+tclap (http://tclap.sourceforge.net/) -- a header-only library, meaning you don't have to compile it ahead of time to use it.
 
 if you are on linux, both of these should be in your distribution repository, although cmake 3.1 is fairly new (as of April 2015 it is still in Fedora rawhide & fedora 22 testing repos), you may need to enable testing or raw repositories to get it.
 
