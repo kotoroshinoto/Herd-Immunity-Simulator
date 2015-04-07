@@ -124,14 +124,18 @@ void InfectablePopulation::init_population(){
 std::vector<std::size_t> InfectablePopulation::getRandomSample(size_t current_node){
     std::vector<std::size_t > sample;
     std::size_t tmp;
-    if(herd_rand->getPopulation() < herd_rand->getRnull()+1){
+    std::size_t randRnull=herd_rand->getRandomRnull();
+//    std::cout<<"using random Rnull: "<<randRnull<<std::endl;
+    //if random rnull is too big, just get all of available population
+    if(herd_rand->getPopulation() < randRnull+1){
         for(std::size_t i = 0; i < herd_rand->getPopulation(); i++){
             if(i != current_node){
                 sample.push_back(i);
             }
         }
     } else {
-        while (sample.size() < herd_rand->getRnull()) {
+        //otherwise get random sample
+        while (sample.size() < randRnull) {
             tmp = herd_rand->getRandomNode();
             if (tmp == current_node) {
                 continue;
