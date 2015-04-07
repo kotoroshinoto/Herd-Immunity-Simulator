@@ -22,6 +22,7 @@ void InfectablePopulation::eval(){
     size_t iUnVac = 0;
     size_t hVac = 0;
     size_t hUnVac = 0;
+
     double herd = 1.0 - (1.0 / ((double)herd_rand->getRnull()));
     for(int i =0 ; i < herd_rand->getPopulation(); i++){
         if(this->pop[i].is_vaccinated()){
@@ -40,8 +41,16 @@ void InfectablePopulation::eval(){
             }
         }
     }
+    double unVacD=unVac;
+    double vacD=vac;
+    double iVacD=iVac;
+    double iUnvacD=iUnVac;
+    double hVacD=hVac;
+    double hUnVacD=hUnVac;
 
-    double immune = (((double)vac) * herd_rand->getVaccineImmunity() + ((double)unVac) * herd_rand->getNaturalImmunity()) / ((double)herd_rand->getPopulation());
+    double populationD=herd_rand->getPopulation();
+
+    double immune = (vacD * herd_rand->getVaccineImmunity() + unVacD * herd_rand->getNaturalImmunity()) / populationD;
     bool isHerd = immune >= herd;
 
     //divbyzero error fixes
@@ -51,17 +60,17 @@ void InfectablePopulation::eval(){
     double iUnVacP=0;
 
     if (vac != 0){
-        hVacP=std::round((((double)hVac)*100.0)/((double)vac)*10)/10;
-        iVacP=std::round((((double)iVac)*100.0)/((double)vac)*10)/10;
+        hVacP=std::round((hVacD*100.0)/vacD*10)/10;
+        iVacP=std::round((iVacD*100.0)/vacD*10)/10;
     }
 
     if(unVac != 0 ){
-        hUnVacP=std::round((((double)hUnVac)*100.0)/((double)unVac)*10.0)/10.0;
-        iUnVacP=std::round((((double)iUnVac)*100.0)/((double)unVac)*10.0)/10.0;
+        hUnVacP=std::round((hUnVacD*100.0)/unVacD*10.0)/10.0;
+        iUnVacP=std::round((iUnvacD*100.0)/unVacD*10.0)/10.0;
     }
     std::cout<<std::boolalpha;
-    std::cout<<"Vaccinated: "<<vac<<" ("<< std::round(((double)vac) * 100.0 / ((double)herd_rand->getPopulation())*10.0)/10.0<<"%)"<<std::endl;
-    std::cout<<"Unvaccinated: "<<unVac<<" ("<< std::round(((double)unVac) * 100.0 / ((double)herd_rand->getPopulation())*10.0)/10.0<<"%)"<<std::endl;
+    std::cout<<"Vaccinated: "<<vac<<" ("<< std::round(vacD * 100.0 / populationD*10.0)/10.0<<"%)"<<std::endl;
+    std::cout<<"Unvaccinated: "<<unVac<<" ("<< std::round(unVacD * 100.0 / populationD*10.0)/10.0<<"%)"<<std::endl;
     std::cout<<"Healthy Vaccinated: "<<hVac<<" ("<<hVacP<<"% of vaccinated)"<<std::endl;
     std::cout<<"Healthy Unvaccinated: "<<hUnVac<<" ("<<hUnVacP<<"% of unvaccinated)"<<std::endl;
     std::cout<<"Infected Vaccinated: "<<iVac<<" ("<<iVacP<<"% of vaccinated)"<<std::endl;
